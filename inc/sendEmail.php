@@ -6,6 +6,9 @@ $siteOwnersEmail = 'rakecoss@hotmail.com';
 
 if($_POST) {
 
+    $error = array(); // Initialize error array
+    $message = "";    // Initialize message variable
+
     $name = trim(stripslashes($_POST['contactName']));
     $email = trim(stripslashes($_POST['contactEmail']));
     $subject = trim(stripslashes($_POST['contactSubject']));
@@ -16,7 +19,7 @@ if($_POST) {
         $error['name'] = "Please enter your name.";
     }
     // Check Email
-    if (!preg_match('/^[a-z0-9&\'\.\-_\+]+@[a-z0-9\-]+\.([a-z0-9\-]+\.)*+[a-z]{2}/is', $email)) {
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error['email'] = "Please enter a valid email address.";
     }
     // Check Message
@@ -28,23 +31,23 @@ if($_POST) {
 
 
     // Set Message
-    $message .= "Email from: " . $name . "<br />";
-    $message .= "Email address: " . $email . "<br />";
+    $message .= "Email from: " . htmlspecialchars($name) . "<br />";
+    $message .= "Email address: " . htmlspecialchars($email) . "<br />";
     $message .= "Message: <br />";
-    $message .= $contact_message;
+    $message .= nl2br(htmlspecialchars($contact_message));
     $message .= "<br /> ----- <br /> This email was sent from your site's contact form. <br />";
 
-    // Set From: header
-    $from =  $name . " <" . $email . ">";
+    // Set From: header (sanitize to prevent header injection)
+    $from = htmlspecialchars($name) . " <" . htmlspecialchars($email) . ">";
 
     // Email Headers
     $headers = "From: " . $from . "\r\n";
-    $headers .= "Reply-To: ". $email . "\r\n";
+    $headers .= "Reply-To: " . htmlspecialchars($email) . "\r\n";
     $headers .= "MIME-Version: 1.0\r\n";
     $headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
 
 
-    if (!$error) {
+    if (empty($error)) {
 
         ini_set("sendmail_from", $siteOwnersEmail); // for windows server
         $mail = mail($siteOwnersEmail, $subject, $message, $headers);
