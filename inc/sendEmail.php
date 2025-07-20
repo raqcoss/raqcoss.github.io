@@ -1,4 +1,7 @@
 ﻿<?php
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 // Replace this with your own email address
 $siteOwnersEmail = 'rakecoss@hotmail.com';
@@ -41,7 +44,7 @@ if($_POST) {
     $from = htmlspecialchars($name) . " <" . htmlspecialchars($email) . ">";
 
     // Email Headers
-    $headers = "From: " . $from . "\r\n";
+    $headers = "From: " . $siteOwnersEmail . "\r\n";
     $headers .= "Reply-To: " . htmlspecialchars($email) . "\r\n";
     $headers .= "MIME-Version: 1.0\r\n";
     $headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
@@ -53,7 +56,7 @@ if($_POST) {
         $mail = mail($siteOwnersEmail, $subject, $message, $headers);
 
         if ($mail) { echo "OK"; }
-        else { echo "Something went wrong. Please try again."; }
+        else { echo "Mail function failed. Please try again later until it gets resolved."; }
         
     } # end if - no validation error
 
